@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Customer Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin></script>
+<style>
+  :root{
+    --paper:#E9EDEC;
+    --ticket:#FFFFFF;
+    --ink:#1C2733;
+    --ink-soft:#5B6672;
+    --line:#CDD5D8;
+    --line-strong:#A9B4B8;
+    --accent:#2E5C8A;
+    --accent-ink:#1E3E5E;
+    --accent-soft:#E5ECF3;
+    --amber:#A8672A;
+    --amber-soft:#F3E9DC;
+    --good:#3F7D5C;
+    --good-soft:#E4EFE8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#171B1F;
+      --ticket:#20262B;
+      --ink:#E7EBEC;
+      --ink-soft:#9AA6AC;
+      --line:#39424A;
+      --line-strong:#4B565E;
+      --accent:#7FB0E0;
+      --accent-ink:#CFE3F5;
+      --accent-soft:#243544;
+      --amber:#D6A365;
+      --amber-soft:#3A3020;
+      --good:#7FC29E;
+      --good-soft:#20362B;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#171B1F;
+    --ticket:#20262B;
+    --ink:#E7EBEC;
+    --ink-soft:#9AA6AC;
+    --line:#39424A;
+    --line-strong:#4B565E;
+    --accent:#7FB0E0;
+    --accent-ink:#CFE3F5;
+    --accent-soft:#243544;
+    --amber:#D6A365;
+    --amber-soft:#3A3020;
+    --good:#7FC29E;
+    --good-soft:#20362B;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", Helvetica, Arial, sans-serif;
+    line-height:1.5;
+    padding:40px 16px 80px;
+  }
+  .wrap{ max-width:760px; margin:0 auto; }
+
+  .perf{ display:flex; justify-content:space-between; padding:0 6px 10px; }
+  .perf span{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--paper);
+    box-shadow: inset 0 0 0 1px var(--line-strong);
+  }
+  .ticket{
+    background:var(--ticket);
+    border:1px solid var(--line);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  header.head{ padding:34px 34px 26px; border-bottom:1px solid var(--line); }
+  .kicker{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:"Source Serif 4", Georgia, serif;
+    font-weight:600;
+    font-size:clamp(28px, 4vw, 36px);
+    margin:0 0 10px;
+    letter-spacing:-0.01em;
+  }
+  .lede{ font-size:15px; color:var(--ink-soft); max-width:56ch; margin:0; }
+
+  section.block{ padding:28px 34px; border-bottom:1px solid var(--line); }
+  section.block:last-of-type{ border-bottom:none; }
+
+  .sec-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:18px; }
+  .sec-no{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    border:1px solid var(--line-strong);
+    border-radius:2px;
+    padding:1px 6px;
+    flex-shrink:0;
+  }
+  .sec-title{
+    font-family:"Source Serif 4", Georgia, serif;
+    font-weight:600;
+    font-size:19px;
+  }
+  .sec-help{ font-size:13.5px; color:var(--ink-soft); margin:-10px 0 18px; }
+
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid .full{ grid-column:1 / -1; }
+  @media (max-width:560px){ .grid{ grid-template-columns:1fr; } }
+
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field-label{ font-size:12.5px; color:var(--ink-soft); font-weight:500; }
+  .field-label .opt{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-left:4px;
+  }
+  input[type=text], input[type=email], input[type=tel], input[type=date], textarea, select{
+    font-family:"IBM Plex Sans", sans-serif;
+    font-size:14.5px;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--line-strong);
+    border-radius:3px;
+    padding:9px 11px;
+    width:100%;
+    outline:none;
+  }
+  input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:1px;
+  }
+  textarea{ resize:vertical; min-height:64px; font-family:"IBM Plex Mono", monospace; font-size:13.5px; }
+
+  /* checkbox groups */
+  .chk-list{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px 20px;
+  }
+  @media (max-width:560px){ .chk-list{ grid-template-columns:1fr; } }
+  .chk{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .chk input{ width:15px; height:15px; accent-color:var(--accent); flex-shrink:0; margin:0; }
+
+  /* toggle pairs */
+  .toggle-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    padding:12px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .toggle-row:last-child{ border-bottom:none; }
+  .toggle-q{ font-size:14.5px; max-width:60%; }
+  .toggle-q .sub{ display:block; font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .toggle{
+    display:flex;
+    border:1px solid var(--line-strong);
+    border-radius:20px;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .toggle button{
+    font-family:"IBM Plex Sans", sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:6px 16px;
+    border:none;
+    background:var(--ticket);
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .toggle button.active{ background:var(--amber); color:#fff; }
+
+  /* reveal-on-demand blocks */
+  .hidden{ display:none; }
+  .add-link{
+    font-family:"IBM Plex Sans", sans-serif;
+    font-size:13.5px;
+    font-weight:500;
+    background:none;
+    border:none;
+    color:var(--accent);
+    cursor:pointer;
+    padding:0;
+    margin-top:14px;
+  }
+  .add-link:hover{ text-decoration:underline; }
+  .product{
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:18px;
+    margin-top:14px;
+    background:var(--paper);
+  }
+  .product-no{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:12px;
+  }
+  .routing{
+    background:var(--accent-soft);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:14px 16px;
+    font-size:13.5px;
+    color:var(--accent-ink);
+    margin-top:18px;
+  }
+  .routing code{ font-family:"IBM Plex Mono", monospace; font-size:12.5px; }
+
+  .submit-row{ padding:30px 34px 34px; display:flex; flex-direction:column; gap:10px; }
+  .btn-primary{
+    font-family:"IBM Plex Sans", sans-serif;
+    font-weight:600;
+    font-size:15px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    padding:13px 20px;
+    cursor:pointer;
+  }
+  .btn-primary:hover{ background:var(--accent-ink); }
+  .warn{ font-size:13px; color:var(--amber); min-height:18px; }
+
+  #output{ display:none; }
+  #output.show{ display:block; }
+  .out-wrap{ margin-top:18px; }
+  .out-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:8px;
+  }
+  .out-head .sec-title{ font-size:16px; }
+  pre#summaryText{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:13px;
+    white-space:pre-wrap;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:16px 18px;
+    color:var(--ink);
+    margin:0;
+  }
+  .out-actions{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .btn-ghost{
+    font-family:"IBM Plex Sans", sans-serif;
+    font-size:13.5px;
+    font-weight:500;
+    background:var(--ticket);
+    color:var(--ink);
+    border:1px solid var(--line-strong);
+    border-radius:4px;
+    padding:9px 15px;
+    cursor:pointer;
+  }
+  .btn-ghost:hover{ background:var(--accent-soft); }
+  .btn-ghost.copied{
+    background:var(--good-soft);
+    border-color:var(--good);
+    color:var(--good);
+  }
+  a.btn-ghost{ text-decoration:none; display:inline-block; }
+
+  footer.foot{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:22px;
+  }
+
+  /* Print / Save as PDF: show only the generated summary */
+  @media print{
+    body{ background:#fff; padding:0; }
+    .perf, .foot, .submit-row .btn-primary, .warn, .out-actions, .ticket > section,
+    .ticket > header{ display:none !important; }
+    .ticket{ border:none; }
+    .submit-row{ padding:0; }
+    #output{ display:block !important; }
+    .out-head{ margin-bottom:14px; }
+    pre#summaryText{
+      border:none;
+      background:#fff;
+      padding:0;
+      font-size:11.5px;
+      color:#000;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="perf" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="ticket">
+    <header class="head">
+      <div class="kicker">New customer intake</div>
+      <h1>New customer setup</h1>
+      <p class="lede">Fill this out for any new account or new tank. It puts everything Commercial and Tank Services need into one request — no back-and-forth emails.</p>
+    </header>
+
+    <section class="block">
+      <div class="sec-head"><span class="sec-no">No. 1</span><span class="sec-title">Who's asking</span></div>
+      <div class="grid">
+        <div class="field"><span class="field-label">Your name</span><input type="text" id="repName" placeholder="Dana Whitfield"></div>
+        <div class="field"><span class="field-label">Your email <span class="opt">the PDF goes here</span></span><input type="email" id="repEmail" placeholder="dana@tevisenergy.com"></div>
+        <div class="field"><span class="field-label">Salesperson <span class="opt">optional</span></span><input type="text" id="salesperson" placeholder="M. Reyes"></div>
+        <div class="field"><span class="field-label">Desired start date <span class="opt">optional</span></span><input type="date" id="startDate"></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="sec-head"><span class="sec-no">No. 2</span><span class="sec-title">The account</span></div>
+      <div class="grid">
+        <div class="field full"><span class="field-label">Business name</span><input type="text" id="businessName" placeholder="Harbor Point Logistics"></div>
+        <div class="field"><span class="field-label">Account # <span class="opt">if existing</span></span><input type="text" id="accountNumber" placeholder="44821"></div>
+        <div class="field">
+          <span class="field-label">Account status</span>
+          <select id="accountStatus">
+            <option value="New Account" selected>New account</option>
+            <option value="New Tank on Existing Account">New tank on existing account</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="field-label">Customer type</span>
+          <select id="customerType">
+            <option value="" selected>—</option>
+            <option value="Transportation">Transportation</option>
+            <option value="Construction">Construction</option>
+            <option value="Farm">Farm</option>
+            <option value="Restaurant">Restaurant</option>
+            <option value="Retail">Retail</option>
+            <option value="Manufacturing">Manufacturing</option>
+            <option value="Marine Fueling">Marine fueling</option>
+            <option value="3rd Party Broker">3rd party broker</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field" id="customerTypeOtherWrap" style="display:none;">
+          <span class="field-label">Customer type <span class="opt">please specify</span></span>
+          <input type="text" id="customerTypeOther" placeholder="e.g. municipality, school district">
+        </div>
+        <div class="field full"><span class="field-label">Delivery address</span><textarea id="deliveryAddress" placeholder="88 Dock Road, Baltimore, MD 21224"></textarea></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="sec-head"><span class="sec-no">No. 3</span><span class="sec-title">Billing</span></div>
+      <div class="grid">
+        <div class="field full"><span class="field-label">Billing address <span class="opt">if different from delivery</span></span><textarea id="billingAddress" placeholder="1200 Industrial Pkwy, Suite 300&#10;Baltimore, MD 21224"></textarea></div>
+        <div class="field"><span class="field-label">Billing contact</span><input type="text" id="billingContactName" placeholder="Ray Ortega"></div>
+        <div class="field"><span class="field-label">Contact phone</span><input type="tel" id="billingContactPhone" placeholder="410-555-0142"></div>
+        <div class="field"><span class="field-label">Contact email</span><input type="email" id="billingContactEmail" placeholder="ray@harborpoint.com"></div>
+        <div class="field"><span class="field-label">Account manager <span class="opt">optional</span></span><input type="text" id="acctMgr" placeholder="K. Lin"></div>
+        <div class="field"><span class="field-label">Suggested credit limit</span><input type="text" id="creditLimit" placeholder="$75,000"></div>
+        <div class="field"><span class="field-label">Credit days extended</span><input type="text" id="creditDays" placeholder="30"></div>
+        <div class="field"><span class="field-label">Payment type</span><input type="text" id="paymentType" placeholder="ACH net 30"></div>
+        <div class="field"><span class="field-label">Email for invoices &amp; tickets</span><input type="text" id="apEmail" placeholder="ap@harborpoint.com"></div>
+      </div>
+      <div class="toggle-row" style="margin-top:8px;">
+        <div class="toggle-q">Tax exempt?<span class="sub">Certificate needs to be on file</span></div>
+        <div class="toggle" data-group="taxExempt">
+          <button type="button" data-val="yes">Yes</button><button type="button" data-val="no" class="active">No</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="sec-head"><span class="sec-no">No. 4</span><span class="sec-title">What they're getting</span></div>
+
+      <div class="product">
+        <div class="product-no">Product 1</div>
+        <div class="grid">
+          <div class="field"><span class="field-label">Product</span><input type="text" id="p1product" placeholder="Diesel"></div>
+          <div class="field"><span class="field-label">Est. volume p/ delivery</span><input type="text" id="p1vol" placeholder="2,500 gal"></div>
+          <div class="field"><span class="field-label">Est. annual volume</span><input type="text" id="p1annual" placeholder="120,000 gal"></div>
+          <div class="field"><span class="field-label">Tank size <span class="opt">optional</span></span><input type="text" id="p1tank" placeholder="1000 gal"></div>
+          <div class="field full">
+            <span class="field-label">Type of delivery</span>
+            <div class="chk-list">
+              <label class="chk"><input type="checkbox" data-group="p1type" value="Tank Delivery">Tank delivery</label>
+              <label class="chk"><input type="checkbox" data-group="p1type" value="Generator">Generator</label>
+              <label class="chk"><input type="checkbox" data-group="p1type" value="Fleet Fueling">Fleet fueling</label>
+              <label class="chk"><input type="checkbox" data-group="p1type" value="Tank + Equipment">Tank + equipment</label>
+            </div>
+          </div>
+          <div class="field full" id="p1fleetWrap" style="display:none;">
+            <span class="field-label">Fleet details <span class="opt">assets and count</span></span>
+            <input type="text" id="p1fleet" placeholder="34 tractors + reefers, dual saddle tanks">
+          </div>
+          <div class="field">
+            <span class="field-label">Term</span>
+            <div class="toggle" data-group="p1term" style="align-self:flex-start;">
+              <button type="button" data-val="Permanent" class="active">Permanent</button><button type="button" data-val="Temporary">Temporary</button>
+            </div>
+          </div>
+          <div class="field" id="p1termEndWrap" style="display:none;">
+            <span class="field-label">Expected end <span class="opt">when the job wraps</span></span>
+            <input type="date" id="p1termEnd">
+          </div>
+        </div>
+      </div>
+
+      <div class="product hidden" id="product2">
+        <div class="product-no">Product 2</div>
+        <div class="grid">
+          <div class="field"><span class="field-label">Product</span><input type="text" id="p2product" placeholder="DEF"></div>
+          <div class="field"><span class="field-label">Est. volume p/ delivery</span><input type="text" id="p2vol" placeholder="200 gal"></div>
+          <div class="field"><span class="field-label">Est. annual volume</span><input type="text" id="p2annual" placeholder="6,000 gal"></div>
+          <div class="field"><span class="field-label">Tank size <span class="opt">optional</span></span><input type="text" id="p2tank" placeholder="330 gal tote"></div>
+          <div class="field">
+            <span class="field-label">Term</span>
+            <div class="toggle" data-group="p2term" style="align-self:flex-start;">
+              <button type="button" data-val="Permanent" class="active">Permanent</button><button type="button" data-val="Temporary">Temporary</button>
+            </div>
+          </div>
+          <div class="field" id="p2termEndWrap" style="display:none;">
+            <span class="field-label">Expected end <span class="opt">when the job wraps</span></span>
+            <input type="date" id="p2termEnd">
+          </div>
+        </div>
+      </div>
+
+      <div class="product hidden" id="product3">
+        <div class="product-no">Product 3</div>
+        <div class="grid">
+          <div class="field"><span class="field-label">Product</span><input type="text" id="p3product"></div>
+          <div class="field"><span class="field-label">Est. volume p/ delivery</span><input type="text" id="p3vol"></div>
+          <div class="field"><span class="field-label">Est. annual volume</span><input type="text" id="p3annual"></div>
+          <div class="field"><span class="field-label">Tank size <span class="opt">optional</span></span><input type="text" id="p3tank"></div>
+          <div class="field">
+            <span class="field-label">Term</span>
+            <div class="toggle" data-group="p3term" style="align-self:flex-start;">
+              <button type="button" data-val="Permanent" class="active">Permanent</button><button type="button" data-val="Temporary">Temporary</button>
+            </div>
+          </div>
+          <div class="field" id="p3termEndWrap" style="display:none;">
+            <span class="field-label">Expected end <span class="opt">when the job wraps</span></span>
+            <input type="date" id="p3termEnd">
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="add-link" id="addProduct">+ Add another product</button>
+    </section>
+
+    <section class="block">
+      <div class="sec-head"><span class="sec-no">No. 5</span><span class="sec-title">Delivery &amp; pricing</span></div>
+      <div class="grid">
+        <div class="field"><span class="field-label">Access time window</span><input type="text" id="accessWindow" placeholder="6am–3pm weekdays"></div>
+        <div class="field"><span class="field-label">BPC / margin</span><input type="text" id="bpcMargin" placeholder="0.28"></div>
+        <div class="field"><span class="field-label">Delivery charge</span><input type="text" id="deliveryCharge" placeholder="$45"></div>
+
+        <div class="field full">
+          <span class="field-label">Known site access delays <span class="opt">optional</span></span>
+          <div class="chk-list">
+            <label class="chk"><input type="checkbox" data-group="delays" value="Locked gate">Locked gate</label>
+            <label class="chk"><input type="checkbox" data-group="delays" value="Security check-in">Security check-in</label>
+          </div>
+        </div>
+        <div class="field full"><span class="field-label">Delivery instructions <span class="opt">optional</span></span><textarea id="deliveryInstructions" placeholder="Back in from Dock Road only. Check in at guard shack."></textarea></div>
+      </div>
+      <div class="toggle-row" style="margin-top:8px;">
+        <div class="toggle-q">Snow drop?</div>
+        <div class="toggle" data-group="snowDrop">
+          <button type="button" data-val="yes">Yes</button><button type="button" data-val="no" class="active">No</button>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-q">LPS trd fee?</div>
+        <div class="toggle" data-group="lpsFee">
+          <button type="button" data-val="yes">Yes</button><button type="button" data-val="no" class="active">No</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="sec-head"><span class="sec-no">No. 6</span><span class="sec-title">Tank &amp; equipment</span></div>
+      <div class="toggle-row" style="padding-top:0;">
+        <div class="toggle-q">Are we setting a tank?<span class="sub">Yes also notifies Tank Services</span></div>
+        <div class="toggle" data-group="hasTank">
+          <button type="button" data-val="yes">Yes</button><button type="button" data-val="no" class="active">No</button>
+        </div>
+      </div>
+
+      <div class="hidden" id="tankBlock" style="margin-top:18px;">
+        <div class="grid">
+          <div class="field"><span class="field-label">Tank size</span><input type="text" id="tankSize" placeholder="1000 gal"></div>
+          <div class="field"><span class="field-label">Site contact</span><input type="text" id="siteContact" placeholder="Ray Ortega 410-555-0142"></div>
+          <div class="field">
+            <span class="field-label">Term</span>
+            <div class="toggle" data-group="tankterm" style="align-self:flex-start;">
+              <button type="button" data-val="Permanent" class="active">Permanent</button><button type="button" data-val="Temporary">Temporary</button>
+            </div>
+          </div>
+          <div class="field" id="tanktermEndWrap" style="display:none;">
+            <span class="field-label">Expected removal <span class="opt">when the tank comes out</span></span>
+            <input type="date" id="tanktermEnd">
+          </div>
+          <div class="field full">
+            <span class="field-label">Equipment type</span>
+            <div class="chk-list">
+              <label class="chk"><input type="checkbox" data-group="equip" value="DoubleWall">DoubleWall</label>
+              <label class="chk"><input type="checkbox" data-group="equip" value="SingleWall">SingleWall</label>
+              <label class="chk"><input type="checkbox" data-group="equip" value="FuelCube">FuelCube</label>
+              <label class="chk"><input type="checkbox" data-group="equip" value="FireGuard">FireGuard</label>
+              <label class="chk"><input type="checkbox" data-group="equip" value="DEF Tote">DEF Tote</label>
+              <label class="chk"><input type="checkbox" data-group="equip" value="Mobile Cube">Mobile Cube</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Pump type</span>
+            <select id="pumpType">
+              <option value="">—</option>
+              <option value="115V">115V</option>
+              <option value="115V HiFlo">115V HiFlo</option>
+              <option value="12V (battery)">12V (battery)</option>
+              <option value="12V HiFlo (battery)">12V HiFlo (battery)</option>
+              <option value="Hand">Hand</option>
+              <option value="No pump (direct feed)">No pump (direct feed)</option>
+            </select>
+          </div>
+          <div class="field">
+            <span class="field-label">Electric hookup</span>
+            <select id="electricHookup">
+              <option value="">—</option>
+              <option value="Hardwire">Hardwire</option>
+              <option value="Extension cord">Extension cord</option>
+              <option value="Car battery">Car battery</option>
+              <option value="Solar">Solar</option>
+            </select>
+          </div>
+          <div class="field">
+            <span class="field-label">Hose length</span>
+            <select id="hoseLength">
+              <option value="">—</option>
+              <option value="8ft">8ft</option>
+              <option value="12ft">12ft</option>
+              <option value="20ft">20ft</option>
+              <option value="50ft retractable reel">50ft retractable reel</option>
+            </select>
+          </div>
+          <div class="field full">
+            <span class="field-label">Other equipment <span class="opt">optional</span></span>
+            <div class="chk-list">
+              <label class="chk"><input type="checkbox" data-group="other" value="Explosion proof">Explosion proof</label>
+              <label class="chk"><input type="checkbox" data-group="other" value="Tank monitor">Tank monitor</label>
+              <label class="chk"><input type="checkbox" data-group="other" value="FluidSecure Link">FluidSecure Link</label>
+              <label class="chk"><input type="checkbox" data-group="other" value="FluidSecure Tablet (Hub)">FluidSecure Tablet (Hub)</label>
+              <label class="chk"><input type="checkbox" data-group="other" value="Secondary containment dike">Secondary containment dike</label>
+              <label class="chk"><input type="checkbox" data-group="other" value="Chain lock on pump">Chain lock on pump</label>
+              <label class="chk"><input type="checkbox" data-group="other" value="Concrete jersey barriers">Concrete jersey barriers</label>
+              <label class="chk"><input type="checkbox" data-group="other" value="Hose recessor">Hose recessor</label>
+            </div>
+          </div>
+          <div class="field full"><span class="field-label">Tank placement onsite</span><input type="text" id="tankPlacement" placeholder="Northeast corner of yard, existing concrete pad"></div>
+          <div class="field"><span class="field-label">Install fee</span><input type="text" id="installFee" placeholder="$1,200"></div>
+          <div class="field"><span class="field-label">Tank fee p/ month</span><input type="text" id="tankFee" placeholder="$185"></div>
+          <div class="field"><span class="field-label">Fuel mgmt fee p/ month</span><input type="text" id="fuelMgmtFee" placeholder="$95"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="sec-head"><span class="sec-no">No. 7</span><span class="sec-title">Anything else</span></div>
+      <div class="field full">
+        <span class="field-label">Notes <span class="opt">optional</span></span>
+        <textarea id="notes" placeholder="Monitor alerts should go to Ray and dispatch..."></textarea>
+      </div>
+      <div class="routing" id="routing"></div>
+    </section>
+
+    <div class="submit-row">
+      <button class="btn-primary" id="generateBtn">Generate request</button>
+      <div class="warn" id="warnMsg"></div>
+
+      <div id="output">
+        <div class="out-wrap">
+          <div class="out-head"><span class="sec-title">Ready to send</span></div>
+          <pre id="summaryText"></pre>
+          <div class="out-actions">
+            <button class="btn-ghost" id="copyBtn">Copy text</button>
+            <a class="btn-ghost" id="mailBtn" href="#">Open in email</a>
+            <button class="btn-ghost" id="printBtn">Print / Save as PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">Based on the standard new customer setup checklist — one form in, one clean request out.</footer>
+</div>
+
+<script>
+(function(){
+  /* ---- toggles ---- */
+  var toggles = {};
+  document.querySelectorAll('.toggle').forEach(function(t){
+    var group = t.getAttribute('data-group');
+    // Read the starting value off whichever button is marked active in the
+    // markup, so a toggle can ship defaulted to Yes.
+    var initial = t.querySelector('button.active');
+    toggles[group] = initial ? initial.getAttribute('data-val') : 'no';
+
+    t.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        t.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        toggles[group] = btn.getAttribute('data-val');
+        if(group === 'hasTank'){
+          document.getElementById('tankBlock').classList.toggle('hidden', toggles.hasTank !== 'yes');
+        }
+        // Any toggle named *term reveals its matching end-date field when
+        // the rep picks Temporary.
+        if(group.slice(-4) === 'term'){
+          var wrap = document.getElementById(group + 'EndWrap');
+          if(wrap) wrap.style.display = toggles[group] === 'Temporary' ? 'flex' : 'none';
+        }
+        renderRouting();
+      });
+    });
+  });
+
+  /* ---- where this goes ---- */
+  function renderRouting(){
+    var mine = document.getElementById('repEmail').value.trim();
+    document.getElementById('routing').innerHTML = mine
+      ? 'When you generate this request, a PDF downloads and an email draft opens addressed to <code>' +
+        mine + '</code>. Attach the PDF and send it on to whoever needs it.'
+      : 'Add your email in section No. 1 — that\'s where the PDF and the email draft go.';
+  }
+  renderRouting();
+  document.getElementById('repEmail').addEventListener('input', renderRouting);
+
+  /* ---- "Other" customer type reveals a specify field ---- */
+  document.getElementById('customerType').addEventListener('change', function(){
+    document.getElementById('customerTypeOtherWrap').style.display =
+      this.value === 'Other' ? 'flex' : 'none';
+  });
+
+  /* ---- fleet fueling reveals a detail field ---- */
+  document.querySelectorAll('[data-group="p1type"]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var fleet = document.querySelector('[data-group="p1type"][value="Fleet Fueling"]');
+      document.getElementById('p1fleetWrap').style.display = fleet.checked ? 'flex' : 'none';
+    });
+  });
+
+  /* ---- progressive product reveal ---- */
+  document.getElementById('addProduct').addEventListener('click', function(){
+    var p2 = document.getElementById('product2');
+    var p3 = document.getElementById('product3');
+    if(p2.classList.contains('hidden')){
+      p2.classList.remove('hidden');
+    } else if(p3.classList.contains('hidden')){
+      p3.classList.remove('hidden');
+      this.style.display = 'none';
+    }
+  });
+
+  /* ---- remember the rep on this device ---- */
+  try{
+    var savedName = localStorage.getItem('setupIntake_name');
+    var savedEmail = localStorage.getItem('setupIntake_email');
+    if(savedName) document.getElementById('repName').value = savedName;
+    if(savedEmail) document.getElementById('repEmail').value = savedEmail;
+  }catch(e){}
+
+  function val(id){
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+  function checked(group){
+    return Array.prototype.slice
+      .call(document.querySelectorAll('[data-group="' + group + '"]:checked'))
+      .map(function(c){ return c.value; });
+  }
+  function yn(group){ return toggles[group] === 'yes' ? 'Yes' : 'No'; }
+
+  /*
+   * The one place the request's name is defined. It becomes the email
+   * subject, the archived file name in SharePoint, and the suggested
+   * filename when a rep saves as PDF — so all three always match.
+   *
+   * Format: New customer <customer> - <submitter> <YYYY-MM-DD>
+   *
+   * Characters that are illegal in file names are stripped. Without this a
+   * customer name containing a slash would break the archiving flow.
+   */
+  function requestName(){
+    var d = new Date();
+    var date = d.getFullYear() + '-' +
+               String(d.getMonth() + 1).padStart(2, '0') + '-' +
+               String(d.getDate()).padStart(2, '0');
+
+    function clean(s){
+      return s.replace(/[\\\/:*?"<>|]/g, '-')  // illegal in file names
+              .replace(/\s+/g, ' ')
+              .trim();
+    }
+
+    return 'New customer ' + clean(val('businessName')) +
+           ' - ' + clean(val('repName')) + ' ' + date;
+  }
+
+  /*
+   * One structured view of the filled-in form, used to render both the text
+   * summary and the PDF. Empty values are dropped so a short setup produces
+   * a short document.
+   */
+  function sections(){
+    var out = [];
+    function add(title, rows){
+      var kept = rows.filter(function(r){
+        var v = r[1];
+        if(Array.isArray(v)) return v.length > 0;
+        return v !== '' && v !== null && v !== undefined;
+      }).map(function(r){
+        return [r[0], Array.isArray(r[1]) ? r[1].join(', ') : r[1]];
+      });
+      if(kept.length) out.push({ title: title, rows: kept });
+    }
+
+    var custType = val('customerType');
+    if(custType === 'Other' && val('customerTypeOther')){
+      custType = 'Other — ' + val('customerTypeOther');
+    }
+
+    add('Account', [
+      ['Business', val('businessName')],
+      ['Account #', val('accountNumber')],
+      ['Status', val('accountStatus')],
+      ['Customer type', custType],
+      ['Requested by', val('repName') + (val('repEmail') ? ' (' + val('repEmail') + ')' : '')],
+      ['Salesperson', val('salesperson')],
+      ['Desired start', val('startDate')],
+      ['Delivery address', val('deliveryAddress').replace(/\n/g, ', ')]
+    ]);
+
+    add('Billing', [
+      ['Billing address', val('billingAddress').replace(/\n/g, ', ')],
+      ['Contact', val('billingContactName')],
+      ['Phone', val('billingContactPhone')],
+      ['Email', val('billingContactEmail')],
+      ['Account manager', val('acctMgr')],
+      ['Suggested credit limit', val('creditLimit')],
+      ['Credit days extended', val('creditDays')],
+      ['Payment type', val('paymentType')],
+      ['Invoices & tickets to', val('apEmail')],
+      ['Tax exempt', yn('taxExempt')]
+    ]);
+
+    [1, 2, 3].forEach(function(n){
+      if(!val('p' + n + 'product')) return;
+      var rows = [
+        ['Product', val('p' + n + 'product')],
+        ['Est. volume p/ delivery', val('p' + n + 'vol')],
+        ['Est. annual volume', val('p' + n + 'annual')],
+        ['Tank size', val('p' + n + 'tank')]
+      ];
+      if(n === 1){
+        rows.push(['Type of delivery', checked('p1type')]);
+        rows.push(['Fleet details', val('p1fleet')]);
+      }
+      var term = toggles['p' + n + 'term'] || 'Permanent';
+      rows.push(['Term', term]);
+      if(term === 'Temporary'){
+        rows.push(['Expected end', val('p' + n + 'termEnd') || 'not given']);
+      }
+      add('Product ' + n, rows);
+    });
+
+    add('Delivery & pricing', [
+      ['Access window', val('accessWindow')],
+      ['Known access delays', checked('delays')],
+      ['BPC / margin', val('bpcMargin')],
+      ['Delivery charge', val('deliveryCharge')],
+      ['Snow drop', yn('snowDrop')],
+      ['LPS trd fee', yn('lpsFee')],
+      ['Instructions', val('deliveryInstructions').replace(/\n/g, ' ')]
+    ]);
+
+    if(toggles.hasTank === 'yes'){
+      var tankTerm = toggles.tankterm || 'Permanent';
+      add('Tank & equipment', [
+        ['Term', tankTerm],
+        ['Expected removal', tankTerm === 'Temporary' ? (val('tanktermEnd') || 'not given') : ''],
+        ['Tank size', val('tankSize')],
+        ['Equipment type', checked('equip')],
+        ['Pump type', val('pumpType')],
+        ['Electric hookup', val('electricHookup')],
+        ['Hose length', val('hoseLength')],
+        ['Other equipment', checked('other')],
+        ['Placement onsite', val('tankPlacement')],
+        ['Site contact', val('siteContact')],
+        ['Install fee', val('installFee')],
+        ['Tank fee p/ month', val('tankFee')],
+        ['Fuel mgmt fee p/ month', val('fuelMgmtFee')]
+      ]);
+    }
+
+    if(val('notes')) add('Notes', [['', val('notes')]]);
+
+    return out;
+  }
+
+  /* ---- PDF ---- */
+  function buildPdf(){
+    if(!window.jspdf || !window.jspdf.jsPDF) throw new Error('pdf-unavailable');
+    var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'letter' });
+
+    var PAGE_W = doc.internal.pageSize.getWidth();
+    var PAGE_H = doc.internal.pageSize.getHeight();
+    var M = 54, LABEL_W = 150, VALUE_X = M + LABEL_W;
+    var VALUE_W = PAGE_W - VALUE_X - M, LINE = 13;
+    var y = M;
+
+    function room(needed){
+      if(y + needed > PAGE_H - M){ doc.addPage(); y = M; }
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(46, 92, 138);
+    doc.text('TEVIS ENERGY', M, y);
+    y += 20;
+
+    doc.setFontSize(20);
+    doc.setTextColor(28, 39, 51);
+    doc.text('New customer setup', M, y);
+    y += 24;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.text(val('businessName') || 'Untitled', M, y);
+    y += 16;
+
+    doc.setFontSize(9);
+    doc.setTextColor(91, 102, 114);
+    doc.text([
+      val('repName') ? 'Submitted by ' + val('repName') : null,
+      new Date().toLocaleDateString(),
+      toggles.hasTank === 'yes' ? 'Includes a tank' : 'No tank'
+    ].filter(Boolean).join('   ·   '), M, y);
+    y += 10;
+
+    doc.setDrawColor(169, 180, 184);
+    doc.setLineWidth(1);
+    doc.line(M, y, PAGE_W - M, y);
+    y += 22;
+
+    sections().forEach(function(sec){
+      room(46);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(46, 92, 138);
+      doc.text(sec.title.toUpperCase(), M, y);
+      y += 6;
+      doc.setDrawColor(205, 213, 216);
+      doc.setLineWidth(0.7);
+      doc.line(M, y, PAGE_W - M, y);
+      y += 14;
+
+      sec.rows.forEach(function(row){
+        var lines = doc.splitTextToSize(String(row[1]), row[0] ? VALUE_W : PAGE_W - M * 2);
+        var h = Math.max(LINE, lines.length * LINE);
+        room(h + 4);
+        doc.setFont('helvetica', 'normal');
+        if(row[0]){
+          doc.setFontSize(9);
+          doc.setTextColor(91, 102, 114);
+          doc.text(doc.splitTextToSize(row[0], LABEL_W - 10), M, y);
+          doc.setFontSize(10);
+          doc.setTextColor(28, 39, 51);
+          doc.text(lines, VALUE_X, y);
+        } else {
+          doc.setFontSize(10);
+          doc.setTextColor(28, 39, 51);
+          doc.text(lines, M, y);
+        }
+        y += h + 4;
+      });
+      y += 12;
+    });
+
+    var pages = doc.internal.getNumberOfPages();
+    for(var i = 1; i <= pages; i++){
+      doc.setPage(i);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(139, 147, 132);
+      doc.text(requestName() + '  —  page ' + i + ' of ' + pages, M, PAGE_H - 28);
+    }
+    return doc;
+  }
+
+  function buildSummary(){
+    var L = ['NEW CUSTOMER SETUP', ''];
+    sections().forEach(function(sec, i){
+      if(i > 0){
+        L.push('');
+        L.push(sec.title.toUpperCase());
+        L.push(new Array(sec.title.length + 1).join('-'));
+      }
+      sec.rows.forEach(function(row){
+        L.push(row[0] ? row[0] + ': ' + row[1] : row[1]);
+      });
+    });
+    if(toggles.hasTank !== 'yes'){
+      L.push('');
+      L.push('No tank on this setup.');
+    }
+    return L.join('\n');
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', function(){
+    var missing = [];
+    if(!val('repName')) missing.push('your name');
+    if(!val('businessName')) missing.push('business name');
+    if(!val('deliveryAddress')) missing.push('delivery address');
+    if(!val('repEmail')) missing.push('your email');
+    if(!val('p1product')) missing.push('at least one product');
+
+    var warnEl = document.getElementById('warnMsg');
+    if(missing.length){
+      warnEl.textContent = 'Still need: ' + missing.join(', ') + '.';
+      document.getElementById('output').classList.remove('show');
+      return;
+    }
+    warnEl.textContent = '';
+
+    try{
+      localStorage.setItem('setupIntake_name', val('repName'));
+      localStorage.setItem('setupIntake_email', val('repEmail'));
+    }catch(e){}
+
+    var text = buildSummary();
+    document.getElementById('summaryText').textContent = text;
+    document.getElementById('output').classList.add('show');
+
+    var subject = requestName();
+
+    // Browsers use the page title as the default filename for "Save as PDF",
+    // so set it to match before the rep prints.
+    document.title = subject;
+    // The PDF downloads; mailto cannot carry an attachment, so the draft
+    // body holds the full text and the rep attaches the file.
+    var pdfOk = true;
+    try{
+      buildPdf().save(subject + '.pdf');
+    }catch(e){
+      pdfOk = false;
+      warnEl.textContent = 'Couldn\'t build the PDF (the PDF tool didn\'t load). ' +
+                           'Use "Print / Save as PDF" below instead.';
+    }
+
+    var body = (pdfOk ? 'PDF attached: ' + subject + '.pdf\n\n' : '') + text;
+    var mailHref = 'mailto:' + encodeURIComponent(val('repEmail')) +
+                   '?subject=' + encodeURIComponent(subject) +
+                   '&body=' + encodeURIComponent(body);
+    document.getElementById('mailBtn').setAttribute('href', mailHref);
+
+    document.getElementById('output').scrollIntoView({behavior:'smooth', block:'nearest'});
+
+    // Open the draft straight away — the rep asked for it by hitting Generate.
+    window.location.href = mailHref;
+  });
+
+  document.getElementById('printBtn').addEventListener('click', function(){
+    window.print();
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var text = document.getElementById('summaryText').textContent;
+    var btn = document.getElementById('copyBtn');
+    function done(){
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = 'Copy text'; btn.classList.remove('copied'); }, 1600);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){
+        fallbackCopy(text); done();
+      });
+    } else {
+      fallbackCopy(text); done();
+    }
+  });
+
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+  }
+})();
+</script>
+</body>
+</html>
