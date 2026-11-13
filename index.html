@@ -399,7 +399,7 @@
       <div class="product">
         <div class="product-no">Product 1</div>
         <div class="grid">
-          <div class="field"><span class="field-label">Product</span><input type="text" id="p1product" placeholder="Diesel"></div>
+          <div class="field"><span class="field-label">Product</span><select id="p1product" data-products></select></div>
           <div class="field"><span class="field-label">Est. volume p/ delivery</span><input type="text" id="p1vol" placeholder="2,500 gal"></div>
           <div class="field"><span class="field-label">Est. annual volume</span><input type="text" id="p1annual" placeholder="120,000 gal"></div>
           <div class="field"><span class="field-label">Tank size <span class="opt">optional</span></span><input type="text" id="p1tank" placeholder="1000 gal"></div>
@@ -432,7 +432,7 @@
       <div class="product hidden" id="product2">
         <div class="product-no">Product 2</div>
         <div class="grid">
-          <div class="field"><span class="field-label">Product</span><input type="text" id="p2product" placeholder="DEF"></div>
+          <div class="field"><span class="field-label">Product</span><select id="p2product" data-products></select></div>
           <div class="field"><span class="field-label">Est. volume p/ delivery</span><input type="text" id="p2vol" placeholder="200 gal"></div>
           <div class="field"><span class="field-label">Est. annual volume</span><input type="text" id="p2annual" placeholder="6,000 gal"></div>
           <div class="field"><span class="field-label">Tank size <span class="opt">optional</span></span><input type="text" id="p2tank" placeholder="330 gal tote"></div>
@@ -452,7 +452,7 @@
       <div class="product hidden" id="product3">
         <div class="product-no">Product 3</div>
         <div class="grid">
-          <div class="field"><span class="field-label">Product</span><input type="text" id="p3product"></div>
+          <div class="field"><span class="field-label">Product</span><select id="p3product" data-products></select></div>
           <div class="field"><span class="field-label">Est. volume p/ delivery</span><input type="text" id="p3vol"></div>
           <div class="field"><span class="field-label">Est. annual volume</span><input type="text" id="p3annual"></div>
           <div class="field"><span class="field-label">Tank size <span class="opt">optional</span></span><input type="text" id="p3tank"></div>
@@ -621,6 +621,49 @@
 
 <script>
 (function(){
+  /*
+   * Product list — matches the product names in Cargas.
+   * To add or rename a product, edit this list; all three product
+   * dropdowns update from it.
+   */
+  var PRODUCTS = [
+    '2 Fuel Oil HO',
+    'B2 On Road Diesel',
+    'B20 On Road Diesel',
+    'B5 Clear Diesel',
+    'B5 Heating Oil',
+    'BIO DIESEL B99',
+    'Clear Kerosene',
+    'DEF - Diesel Exhaust Fuel',
+    'Dyed Kerosene',
+    'HiTest Gasoline 93 Oct',
+    'Midgrade Gasoline PU 89 Oct',
+    'Non Ethanol 87 Gasoline',
+    'Non Ethanol 90 Gasoline',
+    'Off Road Diesel',
+    'On Road Diesel',
+    'Propane',
+    'Unleaded Gasoline RU 87 Oct',
+    'Winter B2 On Road',
+    'Winter B5 Heating Oil',
+    'Winter Heating Oil',
+    'Winter Off Road',
+    'Winter On Road'
+  ];
+
+  document.querySelectorAll('select[data-products]').forEach(function(sel){
+    var blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = 'Select a product';
+    sel.appendChild(blank);
+    PRODUCTS.forEach(function(name){
+      var opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  });
+
   /* ---- toggles ---- */
   var toggles = {};
   document.querySelectorAll('.toggle').forEach(function(t){
